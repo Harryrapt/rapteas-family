@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="el">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Rapteas Family - Ελαιόλαδο</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
+  <style>
+    body{margin:0;font-family:'Playfair Display',serif;background-color:#1e1e1e;color:#f5f5dc}
+    header{background-color:#2b2b2b;padding:1.5rem;text-align:center}
+    header img.logo{max-width:200px;margin-bottom:1rem}
+    nav{margin-top:.5rem}
+    nav a{color:#f5f5dc;margin:0 1rem;text-decoration:none;font-size:1.1rem}
+    main{padding:2rem;max-width:1200px;margin:auto;line-height:1.6}
+    .section-title{color:#cfe8a9;font-size:2rem;text-align:center;margin:1.6rem 0}
+    .product-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(410px,1fr));gap:2.6rem;margin-top:2rem}
+    .product-card{background-color:#2b2b2b;border-radius:12px;padding:1.7rem 1.3rem 1.3rem;box-shadow:0 0 10px rgba(207,232,169,.13);text-align:center;min-width:0}
+    .product-collage{display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;gap:16px;margin:.8rem 0 1.1rem;justify-items:center;align-items:center}
+    .product-collage img{width:170px;height:170px;object-fit:cover;border-radius:14px;box-shadow:0 0 10px #2227;background:#fff;border:2px solid #e7e7c5;cursor:pointer;transition:box-shadow .18s}
+    .product-collage img:nth-child(3){grid-column:1 / span 2;width:260px}
+    .product-collage img:hover{box-shadow:0 0 25px #cfe8a9e2;z-index:3}
+    .product-card h3{margin:.5rem 0 .25rem;color:#cfe8a9}
+    .product-card p{margin:0;font-size:1.06rem;color:#f5f5dc}
+    .product-lightbox{display:none;position:fixed;z-index:9999;left:0;top:0;right:0;bottom:0;background:rgba(30,30,30,.96);align-items:center;justify-content:center;cursor:zoom-out}
+    .product-lightbox img{max-width:96vw;max-height:92vh;border-radius:16px;box-shadow:0 2px 48px #111;background:#fff}
+    .product-lightbox.active{display:flex}
+    .product-lightbox-arrow{background:rgba(220,220,220,.18);border:none;color:#b7b7b7;font-size:2.2rem;width:42px;height:42px;border-radius:50%;cursor:pointer;box-shadow:none;display:flex;align-items:center;justify-content:center;position:absolute;top:50%;transform:translateY(-50%);opacity:.82;transition:background .16s,color .18s;z-index:2}
+    .product-lightbox-arrow.left{left:22px}
+    .product-lightbox-arrow.right{right:22px}
+    .product-lightbox-arrow:hover{background:#ddd;color:#444}
+    .gallery-slider{display:flex;justify-content:center;align-items:center;gap:1.2rem;margin:2.5rem 0 2rem}
+    .gallery-slider img{width:280px;max-width:90vw;height:180px;object-fit:cover;border-radius:14px;box-shadow:0 4px 24px #111a;transition:box-shadow .2s}
+    .gallery-arrow{background:rgba(220,220,220,.18);border:none;color:#b7b7b7;font-size:2.2rem;width:36px;height:36px;border-radius:50%;cursor:pointer;box-shadow:none;display:flex;align-items:center;justify-content:center;transition:background .2s,color .2s;opacity:.65;outline:none}
+    .gallery-arrow:hover,.gallery-arrow:focus{background:rgba(220,220,220,.42);color:#666;opacity:1}
+    .gallery-arrow:active{background:rgba(200,200,200,.26);color:#444}
+    .lightbox{display:none;position:fixed;z-index:9999;left:0;top:0;right:0;bottom:0;background:rgba(30,30,30,.96);align-items:center;justify-content:center;cursor:zoom-out}
+    .lightbox img{max-width:90vw;max-height:80vh;border-radius:16px;box-shadow:0 2px 48px #111}
+    .lightbox.active{display:flex}
+    .product-card.single .product-collage{grid-template-columns:1fr;grid-template-rows:auto}
+    .product-card.single .product-collage img{width:100%;height:320px;object-fit:cover;border-radius:14px}
+    #map{height:450px;border-radius:12px;margin-top:1rem}
+    @media (max-width:900px){
+      .product-grid{grid-template-columns:1fr}
+      .product-collage img{width:80px;height:80px}
+      .product-collage img:nth-child(3){width:130px}
+      main{padding:1rem}
+      .gallery-slider img{width:140px;height:90px}
+      .product-card.single .product-collage img{height:180px}
+    }
+  </style>
+</head>
+<body>
+  <button id="langBtn">EN</button>
+  <header>
+    <img src="images/logo.png" alt="Rapteas Family Logo" class="logo">
+    <nav>
+      <a href="#about" class="nav-about">Σχετικά</a>
+      <a href="#products" class="nav-products">Προϊόντα</a>
+      <a href="#locations" class="nav-locations">Σημεία Πώλησης</a>
+      <a href="#gallery" class="nav-gallery">Φωτογραφίες</a>
+      <a href="#contact" class="nav-contact">Επικοινωνία</a>
+    </nav>
+  </header>
+
+  <main>
+    <section id="about">
+      <h2 class="about-title">Σχετικά με εμάς</h2>
+      <p class="about-desc">Η οικογένεια Ραπτέα καλλιεργεί με σεβασμό τη γη της στη Μάνη και παράγει αγνό, βιολογικό εξαιρετικό παρθένο ελαιόλαδο. Με πιστοποίηση βιολογικών προϊόντων, στόχος μας είναι να φέρουμε την αυθεντική γεύση της ελληνικής φύσης στο τραπέζι σας.</p>
+    </section>
+
+    <section id="bio-olive-oil">
+      <h2 class="section-title bio-title">Εξαιρετικό Παρθένο Ελαιόλαδο βιολογικής καλλιέργειας πρώιμης συγκομιδής</h2>
+      <div class="product-grid">
+        <div class="product-card">
+          <div class="product-collage">
+            <img src="images/products/50ml-bio.jpg" alt="50ml Βιολογικό Παρθένο Ελαιόλαδο" loading="lazy">
+            <img src="images/products/100ml-bio.jpg" alt="100ml Βιολογικό Παρθένο Ελαιόλαδο" loading="lazy">
+            <img src="images/products/100ml-g-bio.jpg" alt="100ml γυάλινο Βιολογικό Παρθένο Ελαιόλαδο" loading="lazy">
+          </div>
+          <h3 class="bio-name">Εξαιρετικό Παρθένο Ελαιόλαδο βιολογικής καλλιέργειας πρώιμης συγκομιδής</h3>
+          <p class="bio-desc">Αγνό ελαιόλαδο από ελιές Μάνης, πιστοποιημένης βιολογικής καλλιέργειας και πρώιμης συγκομιδής. Ιδανικό για κάθε χρήση στη μεσογειακή διατροφή.</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="flavored-oils">
+      <h2 class="section-title flavored-title">Αρωματικά Ελαιόλαδα</h2>
+      <div class="product-grid">
+        <div class="product-card">
+          <div class="product-collage">
+            <img src="images/products/50ml-chilli.jpg" alt="50ml Πιπεριά Τσίλι" loading="lazy">
+            <img src="images/products/100ml-chilli.jpg" alt="100ml Πιπεριά Τσίλι" loading="lazy">
+            <img src="images/products/100ml-g-chilli.jpg" alt="100ml γυάλινο Πιπεριά Τσίλι" loading="lazy">
+          </div>
+          <h3 class="pr-title-1">Πιπεριά Τσίλι</h3>
+          <p class="pr-desc-1"><span class="pairing-text-1">Συνδυάζεται εξαιρετικά:</span> Γαρίδες σαγανάκι, όστρακα, χταπόδι στιφάδο, κόκκινες σάλτσες, κόκορας με μανιάτικες χυλοπίτες.</p>
+        </div>
+
+        <div class="product-card">
+          <div class="product-collage">
+            <img src="images/products/50ml-orange.jpg" alt="50ml Πορτοκάλι" loading="lazy">
+            <img src="images/products/100ml-orange.jpg" alt="100ml Πορτοκάλι" loading="lazy">
+            <img src="images/products/100ml-g-orange.jpg" alt="100ml γυάλινο Πορτοκάλι" loading="lazy">
+          </div>
+          <h3 class="pr-title-2">Πορτοκάλι</h3>
+          <p class="pr-desc-2"><span class="pairing-text-2">Συνδυάζεται εξαιρετικά:</span> Μανιάτικη σαλάτα, πράσινες σαλάτες, όσπρια, κέικ, ομελέτες.</p>
+        </div>
+
+        <div class="product-card">
+          <div class="product-collage">
+            <img src="images/products/50ml-vasilikos.jpg" alt="50ml Βασιλικός" loading="lazy">
+            <img src="images/products/100ml-vasilikos.jpg" alt="100ml Βασιλικός" loading="lazy">
+            <img src="images/products/100ml-g-vasilikos.jpg" alt="100ml γυάλινο Βασιλικός" loading="lazy">
+          </div>
+          <h3 class="pr-title-3">Βασιλικός</h3>
+          <p class="pr-desc-3"><span class="pairing-text-3">Συνδυάζεται εξαιρετικά:</span> Ψητά ψάρια, σεβίτσε θαλασσινών, καρπάτσιο θαλασσινών.</p>
+        </div>
+
+        <div class="product-card">
+          <div class="product-collage">
+            <img src="images/products/50ml-faskomilo.jpg" alt="50ml Φασκόμηλο" loading="lazy">
+            <img src="images/products/100ml-faskomilo.jpg" alt="100ml Φασκόμηλο" loading="lazy">
+            <img src="images/products/100ml-g-faskomilo.jpg" alt="100ml γυάλινο Φασκόμηλο" loading="lazy">
+          </div>
+          <h3 class="pr-title-4">Φασκόμηλο πικάντικο</h3>
+          <p class="pr-desc-4"><span class="pairing-text-4">Συνδυάζεται εξαιρετικά:</span> Χοιρινό, κοτόπουλο, μαρινάδες.</p>
+        </div>
+
+        <div class="product-card">
+          <div class="product-collage">
+            <img src="images/products/50ml-lemon.jpg" alt="50ml Λεμόνι" loading="lazy">
+            <img src="images/products/100ml-lemon.jpg" alt="100ml Λεμόνι" loading="lazy">
+            <img src="images/products/100ml-g-lemon.jpg" alt="100ml γυάλινο Λεμόνι" loading="lazy">
+          </div>
+          <h3 class="pr-title-5">Λεμόνι</h3>
+          <p class="pr-desc-5"><span class="pairing-text-5">Συνδυάζεται εξαιρετικά:</span> Σαλάτες, όσπρια, τάρτα λεμονιού.</p>
+        </div>
+
+        <div class="product-card">
+          <div class="product-collage">
+            <img src="images/products/50ml-skordo.jpg" alt="50ml Σκόρδο" loading="lazy">
+            <img src="images/products/100ml-skordo.jpg" alt="100ml Σκόρδο" loading="lazy">
+            <img src="images/products/100ml-g-skordo.jpg" alt="100ml γυάλινο Σκόρδο" loading="lazy">
+          </div>
+          <h3 class="pr-title-6">Φρέσκο Σκόρδο</h3>
+          <p class="pr-desc-6"><span class="pairing-text-6">Συνδυάζεται εξαιρετικά:</span> Κατσίκι, αρνί, πατάτες, σως γιαουρτιού.</p>
+        </div>
+
+        <div class="product-card">
+          <div class="product-collage">
+            <img src="images/products/50ml-rigani.jpg" alt="50ml Ρίγανη" loading="lazy">
+            <img src="images/products/100ml-rigani.jpg" alt="100ml Ρίγανη" loading="lazy">
+            <img src="images/products/100ml-g-rigani.jpg" alt="100ml γυάλινο Ρίγανη" loading="lazy">
+          </div>
+          <h3 class="pr-title-7">Ρίγανη</h3>
+          <p class="pr-desc-7"><span class="pairing-text-7">Συνδυάζεται εξαιρετικά:</span> Ψητά ψάρια, ψητό ψωμί, μοσχάρι ψητό.</p>
+        </div>
+
+        <div class="product-card">
+          <div class="product-collage">
+            <img src="images/products/50ml-dentrolivano.jpg" alt="50ml Δεντρολίβανο" loading="lazy">
+            <img src="images/products/100ml-dentrolivano.jpg" alt="100ml Δεντρολίβανο" loading="lazy">
+            <img src="images/products/100ml-g-dentrolivano.jpg" alt="100ml γυάλινο Δεντρολίβανο" loading="lazy">
+          </div>
+          <h3>Δεντρολίβανο</h3>
+          <p><span>Συνδυάζεται εξαιρετικά:</span> Ψητά κρέατα, λαχανικά φούρνου, πατάτες, σάλτσες τομάτας.</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="olives">
+      <h2 class="section-title olives-title">Ελιές (40g)</h2>
+      <div class="product-grid">
+        <div class="product-card single">
+          <div class="product-collage">
+            <img src="images/newproducts/kalamata-olives-40gr.jpg" alt="Ελιές Καλαμών 40g">
+          </div>
+          <h3 class="ol-title-1">Ελιές Καλαμών 40g</h3>
+          <p class="ol-desc-1">Σνακ ελιάς σε πρακτική συσκευασία. Ιδανικό για σαλάτες, μεζέδες και ταξίδι.</p>
+        </div>
+        <div class="product-card single">
+          <div class="product-collage">
+            <img src="images/newproducts/mixed-olives-40gr.jpg" alt="Ανάμικτες Ελιές 40g">
+          </div>
+          <h3 class="ol-title-2">Ανάμικτες Ελιές 40g</h3>
+          <p class="ol-desc-2">Μείγμα εκλεκτών ελιών με ισορροπημένη γεύση. Ταιριάζει σε πιατέλες και ορεκτικά.</p>
+        </div>
+        <div class="product-card single">
+          <div class="product-collage">
+            <img src="images/newproducts/green-olives-40gr.jpg" alt="Πράσινες Ελιές 40g">
+          </div>
+          <h3 class="ol-title-3">Πράσινες Ελιές 40g</h3>
+          <p class="ol-desc-3">Τραγανές πράσινες ελιές. Ιδανικές για σνακ, πίτσες και σαλάτες.</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="pates">
+      <h2 class="section-title pates-title">Πατέ Ελιάς</h2>
+      <div class="product-grid">
+        <div class="product-card single">
+          <div class="product-collage">
+            <img src="images/newproducts/kalamata-pate-40gr.jpg" alt="Πατέ Ελιάς Καλαμών 40γρ">
+          </div>
+          <h3 class="pate-title-1">Πατέ Ελιάς Καλαμών 40γρ</h3>
+          <p class="pate-desc-1">Πλούσια γεύση από ώριμες ελιές Καλαμών. Απλωτά, ντιπ και σάντουιτς.</p>
+        </div>
+        <div class="product-card single">
+          <div class="product-collage">
+            <img src="images/newproducts/green-pate-40gr.jpg" alt="Πατέ Πράσινης Ελιάς 40γρ">
+          </div>
+          <h3 class="pate-title-2">Πατέ Πράσινης Ελιάς 40γρ</h3>
+          <p class="pate-desc-2">Αρωματικό και δροσερό, ιδανικό για σαλάτες και ορεκτικά.</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="salt-oregano">
+      <h2 class="section-title saltoregano-title">Αλάτι & Ρίγανη</h2>
+
+      <h3 style="color:#cfe8a9;text-align:center;margin-top:1rem" class="saltoregano-small-title">Μικρά Βαζάκια</h3>
+      <div class="product-grid">
+        <div class="product-card single">
+          <div class="product-collage">
+            <img src="images/newproducts/salt-30gr.jpg" alt="Αλάτι 30γρ">
+          </div>
+          <h3 class="salt-small">Αλάτι 30γρ</h3>
+          <p class="salt-small-desc">Θαλασσινό αλάτι από τη Τραχήλα, ιδανικό για καθημερινή χρήση.</p>
+        </div>
+        <div class="product-card single">
+          <div class="product-collage">
+            <img src="images/newproducts/oregano-4gr.jpg" alt="Ρίγανη 4γρ">
+          </div>
+          <h3 class="oregano-small">Ρίγανη 4γρ</h3>
+          <p class="oregano-small-desc">Αρωματική ρίγανη Ταϋγέτου σε μικρό βαζάκι.</p>
+        </div>
+      </div>
+
+      <h3 style="color:#cfe8a9;text-align:center;margin-top:2rem" class="saltoregano-big-title">Μεγάλα Βαζάκια</h3>
+      <div class="product-grid">
+        <div class="product-card single">
+          <div class="product-collage">
+            <img src="images/newproducts/salt-90gr.jpg" alt="Αλάτι 90γρ">
+          </div>
+          <h3 class="salt-big">Αλάτι 90γρ</h3>
+          <p class="salt-big-desc">Θαλασσινό αλάτι από τη Τραχήλα, σε μεγαλύτερη συσκευασία.</p>
+        </div>
+        <div class="product-card single">
+          <div class="product-collage">
+            <img src="images/newproducts/oregano-15gr.jpg" alt="Ρίγανη 15γρ">
+          </div>
+          <h3 class="oregano-big">Ρίγανη 15γρ</h3>
+          <p class="oregano-big-desc">Ρίγανη Ταϋγέτου σε μεγάλο βαζάκι, πλούσια σε άρωμα.</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="locations">
+      <h2 class="locations-title">Σημεία Πώλησης</h2>
+      <p class="locations-desc"><b>Βιολογικό Εξαιρετικό Παρθένο Ελαιόλαδο:</b> Τυποποιείται σε γυάλινη φιάλη 50ml, 100ml, 250ml, 500ml, 750ml, 1 λίτρου και σε μεταλλικό δοχείο 100ml, 250ml, 500ml, 1 λίτρου, 3 λίτρων, 5 λίτρων.<br><b>Αρωματικά Ελαιόλαδα:</b> Διατίθενται σε γυάλινη φιάλη 50ml, 100ml και μεταλλικό δοχείο 100ml.<br>Τα προϊόντα μας είναι διαθέσιμα στα παρακάτω επιλεγμένα σημεία πώλησης.</p>
+      <div id="map"></div>
+    </section>
+
+    <section id="gallery">
+      <h2 style="text-align:center;color:#cfe8a9;">Φωτογραφίες</h2>
+      <div class="gallery-slider">
+        <button class="gallery-arrow left" onclick="prevPhoto()" aria-label="Προηγούμενη φωτογραφία">&#8592;</button>
+        <img id="gallery-img" src="images/gallery/photo1.jpg" alt="Φωτογραφία 1" onclick="openLightbox()" style="cursor:zoom-in">
+        <button class="gallery-arrow right" onclick="nextPhoto()" aria-label="Επόμενη φωτογραφία">&#8594;</button>
+      </div>
+      <div id="lightbox" class="lightbox" onclick="closeLightbox()">
+        <img id="lightbox-img" src="" alt="">
+      </div>
+    </section>
+
+    <section id="contact">
+      <h2 class="contact-title">Επικοινωνία</h2>
+      <p class="contact-email">Email: <a href="mailto:info@rapteasfamily.com" style="color:#cfe8a9;">info@rapteasfamily.com</a></p>
+      <p class="contact-phone">Τηλέφωνο: <a href="tel:+306944420729" style="color:#cfe8a9;">+30 6944 420 729</a></p>
+      <p class="contact-location">Τοποθεσία: Στούπα, Μάνη, Ελλάδα</p>
+    </section>
+  </main>
+
+  <footer>
+    <p class="footer-copyright">© 2025 Rapteas Designs.</p>
+  </footer>
+
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+  <script>
+    var map=L.map('map').setView([37.2,22.9],6);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:'&copy; OpenStreetMap contributors'}).addTo(map);
+    const locations=[
+      {name:'Εμπορκό Βιοπωλείο – Τρίκαλα Κορινθίας',coords:[37.972701,22.524055]},
+      {name:'Εμπορικό Βιοπωλείο – Κως',coords:[36.893385,27.287049]},
+      {name:'4 Εποχές – Λεβίδι',coords:[37.682693,22.157512]},
+      {name:'Μπαχαρτ εν Καλάμαις – Καλαμάτα',coords:[37.039145,22.114972]},
+      {name:'Σουπερ Μάρκετ Σπυρέας – Καρδαμύλη',coords:[36.887619,22.230020]},
+      {name:'Φυρογής – Κύθηρα',coords:[36.158187,22.999183]},
+      {name:'Αnnas Gift Shop – Στούπα',coords:[36.8453848,22.2596295]}
+    ];
+    locations.forEach(loc=>{L.marker(loc.coords).addTo(map).bindPopup(loc.name)});
+  </script>
+
+  <script>
+    const photos=[
+      {src:'images/gallery/IMG_20230207_101921_139.jpg',alt:'Φωτογραφία 1'},
+      {src:'images/gallery/IMG_20230207_101926_724.jpg',alt:'Φωτογραφία 2'},
+      {src:'images/gallery/IMG_20230208_134522_0.jpg',alt:'Φωτογραφία 3'},
+      {src:'images/gallery/IMG_20230302_131126_789.jpg',alt:'Φωτογραφία 4'},
+      {src:'images/gallery/IMG_20230707_101240_316.jpg',alt:'Φωτογραφία 5'},
+      {src:'images/gallery/IMG_20230707_101259_536.jpg',alt:'Φωτογραφία 6'},
+      {src:'images/gallery/IMG_20231011_101156_190.jpg',alt:'Φωτογραφία 7'},
+      {src:'images/gallery/IMG_20231013_100313_2.jpg',alt:'Φωτογραφία 8'},
+      {src:'images/gallery/IMG_20231017_194327_436.jpg',alt:'Φωτογραφία 9'},
+      {src:'images/gallery/IMG_20240601_133340_386.jpg',alt:'Φωτογραφία 10'},
+      {src:'images/gallery/IMG_20250305_125947.jpg',alt:'Φωτογραφία 11'},
+      {src:'images/gallery/IMG_20250416_193527.jpg',alt:'Φωτογραφία 12'},
+      {src:'images/gallery/IMG_20250416_194026.jpg',alt:'Φωτογραφία 13'}
+    ];
+    let currentPhoto=0;
+    function showPhoto(idx){currentPhoto=(idx+photos.length)%photos.length;const img=document.getElementById('gallery-img');img.src=photos[currentPhoto].src;img.alt=photos[currentPhoto].alt}
+    function prevPhoto(){showPhoto(currentPhoto-1)}
+    function nextPhoto(){showPhoto(currentPhoto+1)}
+    function openLightbox(){document.getElementById('lightbox-img').src=photos[currentPhoto].src;document.getElementById('lightbox').classList.add('active')}
+    function closeLightbox(){document.getElementById('lightbox').classList.remove('active');document.getElementById('lightbox-img').src=''}
+    document.addEventListener('keydown',function(e){if(document.getElementById('lightbox').classList.contains('active')){if(e.key==='ArrowLeft')prevPhoto();if(e.key==='ArrowRight')nextPhoto();if(e.key==='Escape')closeLightbox()}else{if(e.key==='ArrowLeft')prevPhoto();if(e.key==='ArrowRight')nextPhoto()}})
+    document.addEventListener('DOMContentLoaded',function(){showPhoto(0)})
+  </script>
+
+  <div id="product-lightbox" class="product-lightbox" onclick="closeProductLightbox(event)">
+    <button class="product-lightbox-arrow left" onclick="event.stopPropagation();prevProductImg();">&#8592;</button>
+    <img id="product-lightbox-img" src="" alt="">
+    <button class="product-lightbox-arrow right" onclick="event.stopPropagation();nextProductImg();">&#8594;</button>
+  </div>
+
+  <script>
+    let currentGroup=[],currentIdx=0;
+    function buildGroupFromCollage(collage){
+      const imgs=[...collage.querySelectorAll('img')].filter(im=>im.style.display!=='none');
+      return imgs.map(im=>im.src);
+    }
+    document.addEventListener('DOMContentLoaded',function(){
+      document.querySelectorAll('.product-collage img').forEach(img=>{
+        img.addEventListener('error',function(){
+          this.style.display='none';
+          const col=this.closest('.product-collage');
+          const anyVisible=[...col.querySelectorAll('img')].some(i=>i.style.display!=='none');
+          if(!anyVisible){col.closest('.product-card').style.display='none'}
+        });
+        img.addEventListener('click',function(e){
+          e.stopPropagation();
+          const collage=this.closest('.product-collage');
+          currentGroup=buildGroupFromCollage(collage);
+          currentIdx=[...collage.querySelectorAll('img')].filter(im=>im.style.display!=='none').indexOf(this);
+          if(currentIdx<0) currentIdx=0;
+          document.getElementById('product-lightbox-img').src=currentGroup[currentIdx]||'';
+          document.getElementById('product-lightbox').classList.add('active');
+        });
+      });
+    });
+    function closeProductLightbox(event){
+      if(!event||event.target.classList.contains('product-lightbox')){
+        document.getElementById('product-lightbox').classList.remove('active');
+        document.getElementById('product-lightbox-img').src='';
+        currentGroup=[];
+      }
+    }
+    function prevProductImg(){
+      if(!currentGroup.length) return;
+      currentIdx=(currentIdx-1+currentGroup.length)%currentGroup.length;
+      document.getElementById('product-lightbox-img').src=currentGroup[currentIdx];
+    }
+    function nextProductImg(){
+      if(!currentGroup.length) return;
+      currentIdx=(currentIdx+1)%currentGroup.length;
+      document.getElementById('product-lightbox-img').src=currentGroup[currentIdx];
+    }
+    document.addEventListener('keydown',function(e){
+      if(document.getElementById('product-lightbox').classList.contains('active')){
+        if(e.key==='ArrowLeft')prevProductImg();
+        if(e.key==='ArrowRight')nextProductImg();
+        if(e.key==='Escape')closeProductLightbox({target:document.getElementById('product-lightbox')});
+      }
+    });
+  </script>
+
+  <script>
+    const translations={
+      el:{
+        nav:['Σχετικά','Προϊόντα','Σημεία Πώλησης','Φωτογραφίες','Επικοινωνία'],
+        aboutTitle:'Σχετικά με εμάς',
+        aboutDesc:'Η οικογένεια Ραπτέα καλλιεργεί με σεβασμό τη γη της στη Μάνη και παράγει αγνό, βιολογικό εξαιρετικό παρθένο ελαιόλαδο. Με πιστοποίηση βιολογικών προϊόντων, στόχος μας είναι να φέρουμε την αυθεντική γεύση της ελληνικής φύσης στο τραπέζι σας.',
+        bioTitle:'Εξαιρετικό Παρθένο Ελαιόλαδο βιολογικής καλλιέργειας πρώιμης συγκομιδής',
+        bioName:'Εξαιρετικό Παρθένο Ελαιόλαδο βιολογικής καλλιέργειας πρώιμης συγκομιδής',
+        bioDesc:'Αγνό ελαιόλαδο από ελιές Μάνης, πιστοποιημένης βιολογικής καλλιέργειας και πρώιμης συγκομιδής. Ιδανικό για κάθε χρήση στη μεσογειακή διατροφή.',
+        flavoredTitle:'Αρωματικά Ελαιόλαδα',
+        pairing:'Συνδυάζεται εξαιρετικά:',
+        olivesTitle:'Ελιές (40g)',
+        olTitles:['Ελιές Καλαμών 40g','Ανάμικτες Ελιές 40g','Πράσινες Ελιές 40g'],
+        olDescs:[
+          'Σνακ ελιάς σε πρακτική συσκευασία. Ιδανικό για σαλάτες, μεζέδες και ταξίδι.',
+          'Μείγμα εκλεκτών ελιών με ισορροπημένη γεύση. Ταιριάζει σε πιατέλες και ορεκτικά.',
+          'Τραγανές πράσινες ελιές. Ιδανικές για σνακ, πίτσες και σαλάτες.'
+        ],
+        patesTitle:'Πατέ Ελιάς',
+        pateTitles:['Πατέ Ελιάς Καλαμών 40γρ','Πατέ Πράσινης Ελιάς 40γρ'],
+        pateDescs:[
+          'Πλούσια γεύση από ώριμες ελιές Καλαμών. Απλωτά, ντιπ και σάντουιτς.',
+          'Αρωματικό και δροσερό, ιδανικό για σαλάτες και ορεκτικά.'
+        ],
+        saltOreganoTitle:'Αλάτι & Ρίγανη',
+        saltOreganoSmall:'Μικρά Βαζάκια',
+        saltOreganoBig:'Μεγάλα Βαζάκια',
+        saltSmall:'Αλάτι 30γρ',
+        saltSmallDesc:'Θαλασσινό αλάτι από τη Τραχήλα, ιδανικό για καθημερινή χρήση.',
+        oreganoSmall:'Ρίγανη 4γρ',
+        oreganoSmallDesc:'Αρωματική ρίγανη Ταϋγέτου σε μικρό βαζάκι.',
+        saltBig:'Αλάτι 90γρ',
+        saltBigDesc:'Θαλασσινό αλάτι από τη Τραχήλα, σε μεγαλύτερη συσκευασία.',
+        oreganoBig:'Ρίγανη 15γρ',
+        oreganoBigDesc:'Ρίγανη Ταϋγέτου σε μεγάλο βαζάκι, πλούσια σε άρωμα.',
+        locationsTitle:'Σημεία Πώλησης',
+        locationsDesc:'<b>Βιολογικό Εξαιρετικό Παρθένο Ελαιόλαδο:</b> Τυποποιείται σε γυάλινη φιάλη 50ml, 100ml, 250ml, 500ml, 750ml, 1 λίτρου και σε μεταλλικό δοχείο 100ml, 250ml, 500ml, 1 λίτρου, 3 λίτρων, 5 λίτρων.<br><b>Αρωματικά Ελαιόλαδα:</b> Διατίθενται σε γυάλινη φιάλη 50ml, 100ml και μεταλλικό δοχείο 100ml.<br>Τα προϊόντα μας είναι διαθέσιμα στα παρακάτω επιλεγμένα σημεία πώλησης.',
+        contactTitle:'Επικοινωνία',
+        contactEmail:'Email: <a href="mailto:info@rapteasfamily.com" style="color:#cfe8a9;">info@rapteasfamily.com</a>',
+        contactPhone:'Τηλέφωνο: <a href="tel:+306944420729" style="color:#cfe8a9;">+30 6944 420 729</a>',
+        contactLocation:'Τοποθεσία: Στούπα, Μάνη, Ελλάδα',
+        footerCopyright:'© 2025 Rapteas Designs.',
+        langBtn:'EN'
+      },
+      en:{
+        nav:['About','Products','Sales Points','Gallery','Contact'],
+        aboutTitle:'About Us',
+        aboutDesc:'The Rapteas family respectfully cultivates their land in Mani and produces pure, organic extra virgin olive oil. With organic certification, our goal is to bring the authentic taste of Greek nature to your table.',
+        bioTitle:'Early Harvest Organic Extra Virgin Olive Oil',
+        bioName:'Early Harvest Organic Extra Virgin Olive Oil',
+        bioDesc:'Pure olive oil from Mani olives, certified organic and early harvest. Ideal for every use in the Mediterranean diet.',
+        flavoredTitle:'Flavored Olive Oils',
+        pairing:'Pairs perfectly with:',
+        olivesTitle:'Olives (40g)',
+        olTitles:['Kalamata Olives 40g','Mixed Olives 40g','Green Olives 40g'],
+        olDescs:[
+          'Olive snack in a handy pack. Perfect for salads, meze and travel.',
+          'Blend of select olives with a balanced taste. Great for platters and appetizers.',
+          'Crisp green olives. Ideal for snacks, pizzas and salads.'
+        ],
+        patesTitle:'Olive Paste',
+        pateTitles:['Kalamata Olive Paste 40g','Green Olive Paste 40g'],
+        pateDescs:[
+          'Rich taste from ripe Kalamata olives. Great for spreads, dips and sandwiches.',
+          'Aromatic and fresh, perfect for salads and starters.'
+        ],
+        saltOreganoTitle:'Sea Salt & Oregano',
+        saltOreganoSmall:'Small Jars',
+        saltOreganoBig:'Large Jars',
+        saltSmall:'Sea Salt 30g',
+        saltSmallDesc:'Sea salt from Trachila, ideal for everyday use.',
+        oreganoSmall:'Oregano 4g',
+        oreganoSmallDesc:'Aromatic Taygetos oregano in a small jar.',
+        saltBig:'Sea Salt 90g',
+        saltBigDesc:'Sea salt from Trachila in a larger pack.',
+        oreganoBig:'Oregano 15g',
+        oreganoBigDesc:'Taygetos oregano in a large jar, full of aroma.',
+        locationsTitle:'Sales Points',
+        locationsDesc:'<b>Organic Extra Virgin Olive Oil:</b> Packaged in glass bottles of 50ml, 100ml, 250ml, 500ml, 750ml, 1L and metal tins of 100ml, 250ml, 500ml, 1L, 3L, 5L.<br><b>Flavored Olive Oils:</b> Available in glass bottles of 50ml, 100ml and metal tin of 100ml.<br>Our products are available at the following selected sales points.',
+        contactTitle:'Contact',
+        contactEmail:'Email: <a href="mailto:info@rapteasfamily.com" style="color:#cfe8a9;">info@rapteasfamily.com</a>',
+        contactPhone:'Phone: <a href="tel:+306944420729" style="color:#cfe8a9;">+30 6944 420 729</a>',
+        contactLocation:'Location: Stoupa, Mani, Greece',
+        footerCopyright:'© 2025 Rapteas Designs.',
+        langBtn:'GR'
+      }
+    };
+
+    let currentLang='el';
+    function setLang(lang){
+      const t=translations[lang];
+      document.querySelector('.nav-about').textContent=t.nav[0];
+      document.querySelector('.nav-products').textContent=t.nav[1];
+      document.querySelector('.nav-locations').textContent=t.nav[2];
+      document.querySelector('.nav-gallery').textContent=t.nav[3];
+      document.querySelector('.nav-contact').textContent=t.nav[4];
+      document.querySelector('.about-title').textContent=t.aboutTitle;
+      document.querySelector('.about-desc').textContent=t.aboutDesc;
+      document.querySelector('.bio-title').textContent=t.bioTitle;
+      document.querySelector('.bio-name').textContent=t.bioName;
+      document.querySelector('.bio-desc').textContent=t.bioDesc;
+      document.querySelector('.flavored-title').textContent=t.flavoredTitle;
+
+      const olTitles=document.querySelectorAll('.ol-title-1, .ol-title-2, .ol-title-3');
+      const olDescs=document.querySelectorAll('.ol-desc-1, .ol-desc-2, .ol-desc-3');
+      document.querySelector('.olives-title').textContent=t.olivesTitle;
+      olTitles.forEach((el,i)=>{el.textContent=t.olTitles[i]||el.textContent});
+      olDescs.forEach((el,i)=>{el.textContent=t.olDescs[i]||el.textContent});
+
+      document.querySelector('.pates-title').textContent=t.patesTitle;
+      const ptT=[...document.querySelectorAll('.pate-title-1, .pate-title-2')];
+      const ptD=[...document.querySelectorAll('.pate-desc-1, .pate-desc-2')];
+      ptT.forEach((el,i)=>{el.textContent=t.pateTitles[i]||el.textContent});
+      ptD.forEach((el,i)=>{el.textContent=t.pateDescs[i]||el.textContent});
+
+      document.querySelector('.saltoregano-title').textContent=t.saltOreganoTitle;
+      document.querySelector('.saltoregano-small-title').textContent=t.saltOreganoSmall;
+      document.querySelector('.saltoregano-big-title').textContent=t.saltOreganoBig;
+      document.querySelector('.salt-small').textContent=t.saltSmall;
+      document.querySelector('.salt-small-desc').textContent=t.saltSmallDesc;
+      document.querySelector('.oregano-small').textContent=t.oreganoSmall;
+      document.querySelector('.oregano-small-desc').textContent=t.oreganoSmallDesc;
+      document.querySelector('.salt-big').textContent=t.saltBig;
+      document.querySelector('.salt-big-desc').textContent=t.saltBigDesc;
+      document.querySelector('.oregano-big').textContent=t.oreganoBig;
+      document.querySelector('.oregano-big-desc').textContent=t.oreganoBigDesc;
+
+      document.querySelector('.locations-title').textContent=t.locationsTitle;
+      document.querySelector('.locations-desc').innerHTML=t.locationsDesc;
+      document.querySelector('.contact-title').textContent=t.contactTitle;
+      document.querySelector('.contact-email').innerHTML=t.contactEmail;
+      document.querySelector('.contact-phone').innerHTML=t.contactPhone;
+      document.querySelector('.contact-location').textContent=t.contactLocation;
+      document.querySelector('.footer-copyright').innerHTML=t.footerCopyright;
+      document.getElementById('langBtn').textContent=t.langBtn;
+      document.documentElement.lang=lang;
+      currentLang=lang;
+    }
+    document.getElementById('langBtn').onclick=function(){setLang(currentLang==='el'?'en':'el')};
+    setLang('el');
+  </script>
+</body>
+</html>
