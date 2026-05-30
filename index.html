@@ -1,0 +1,221 @@
+<!doctype html>
+<html lang="el">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Rapteas Family — Βιολογικό Ελαιόλαδο Μάνης</title>
+<meta name="description" content="Βιολογικό εξαιρετικό παρθένο ελαιόλαδο πρώιμης συγκομιδής από τη Στούπα της Μάνης. Τέσσερις γενιές οικογένειας Ραπτέα." />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+<link rel="stylesheet" href="styles.css" />
+
+<!-- ΣΚΡΙΠΤ ΑΥΤΟΜΑΤΗΣ ΑΝΑΚΑΤΕΥΘΥΝΣΗΣ ΣΤΑ ΑΓΓΛΙΚΑ -->
+<script>
+  if (!sessionStorage.getItem('lang_checked')) {
+    sessionStorage.setItem('lang_checked', 'true');
+    const userLang = navigator.language || navigator.userLanguage;
+    if (!userLang.startsWith('el')) {
+      window.location.replace('index-en.html');
+    }
+  }
+</script>
+</head>
+<body id="top">
+
+<header class="nav">
+  <div class="nav-inner">
+    <a href="#top" class="brand">
+      <span class="brand-name">Rapteas</span><span class="brand-dot"> · </span><em class="brand-sub">family</em>
+    </a>
+    <nav class="nav-links">
+      <a href="#about">Η οικογένεια</a>
+      <a href="#oil">Ελαιόλαδο</a>
+      <a href="#aromatic">Αρωματικά</a>
+      <a href="#pantry">Παντοπωλείο</a>
+      <a href="#locations">Σημεία Πώλησης</a>
+      <a href="#contact">Επικοινωνία</a>
+      
+      <!-- ΚΟΥΜΠΙ ΓΛΩΣΣΑΣ -->
+      <div class="lang-switch">
+        <span class="active">EL</span>
+        <span>|</span>
+        <a href="index-en.html">EN</a>
+      </div>
+    </nav>
+    <a href="#contact" class="nav-cta">Παραγγελία</a>
+  </div>
+</header>
+
+<!-- HERO -->
+<section class="hero">
+  <img src="assets/hero-olives.jpg" alt="Ελαιώνες στη Μάνη το ηλιοβασίλεμα" class="hero-img" />
+  <div class="hero-overlay"></div>
+  <div class="hero-content">
+    <p class="eyebrow">Στούπα · Μάνη · Ελλάδα</p>
+    <h1 class="display hero-title">
+      Η γη της Μάνης,<br>
+      <em class="accent">σταγόνα-σταγόνα</em> στο τραπέζι σας.
+    </h1>
+    <p class="hero-lead">
+      Βιολογικό εξαιρετικό παρθένο ελαιόλαδο πρώιμης συγκομιδής, καλλιεργημένο
+      με σεβασμό από τέσσερις γενιές της οικογένειας Ραπτέα.
+    </p>
+    <div class="hero-foot">
+      <a href="#oil" class="link-underline">Δείτε τα προϊόντα ↓</a>
+      <span class="muted-small">Πιστοποιημένο Βιολογικό</span>
+    </div>
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section id="about" class="section">
+  <div class="grid-12 about-grid">
+    <div class="col-5">
+      <img src="assets/family.jpg" alt="Συγκομιδή ελιάς" class="img-portrait" loading="lazy" />
+    </div>
+    <div class="col-7 about-text">
+      <p class="eyebrow">— Σχετικά με εμάς</p>
+      <h2 class="display h-xl">Μια οικογένεια. Ένας ελαιώνας. <em class="accent">Μία υπόσχεση.</em></h2>
+      <div class="prose">
+        <p>Η οικογένεια Ραπτέα καλλιεργεί με σεβασμό τη γη της στη Μάνη και παράγει αγνό, βιολογικό εξαιρετικό παρθένο ελαιόλαδο.</p>
+        <p>Με πιστοποίηση βιολογικών προϊόντων, στόχος μας είναι να φέρουμε την αυθεντική γεύση της ελληνικής φύσης στο τραπέζι σας — όπως την μάθαμε από τους παππούδες μας.</p>
+      </div>
+      <dl class="stats">
+        <div><dt class="display">4</dt><dd>γενιές</dd></div>
+        <div><dt class="display">100%</dt><dd>βιολογικό</dd></div>
+        <div><dt class="display">Πρώιμη</dt><dd>συγκομιδή</dd></div>
+      </dl>
+    </div>
+  </div>
+</section>
+
+<div class="hairline"></div>
+
+<!-- OIL -->
+<section id="oil" class="section">
+  <div class="grid-12 oil-grid">
+    <div class="col-7 order-2">
+      <p class="eyebrow">— Signature</p>
+      <h2 class="display h-xl">Εξαιρετικό Παρθένο Ελαιόλαδο <em class="accent">πρώιμης συγκομιδής.</em></h2>
+      <p class="prose">Αγνό ελαιόλαδο από ελιές Μάνης, πιστοποιημένης βιολογικής καλλιέργειας. Συλλέγεται πρώιμα για να διατηρήσει τη χαρακτηριστική πικάντικη και φρουτώδη γεύση του.</p>
+      <div class="spec">
+        <div class="spec-row"><span>Γυάλινη φιάλη</span><span>50, 100, 250, 500, 750ml, 1L</span></div>
+        <div class="spec-row"><span>Μεταλλικό δοχείο</span><span>100, 250, 500ml, 1, 3, 5L</span></div>
+      </div>
+    </div>
+    <div class="col-5 order-1">
+      <div class="bottle-wrap">
+        <div class="bottle-glow"></div>
+        <img src="assets/bottle-bio.png" alt="Φιάλη βιολογικού ελαιολάδου" class="img-portrait bottle-img" loading="lazy" />
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- AROMATIC -->
+<section id="aromatic" class="section bg-card">
+  <div class="container">
+    <div class="head-row">
+      <div>
+        <p class="eyebrow">— Συλλογή</p>
+        <h2 class="display h-xl">Αρωματικά Ελαιόλαδα, <em class="accent">εννιά νότες.</em></h2>
+      </div>
+      <p class="muted side-note">Φυσικά εκχυλίσματα από βότανα και φρούτα του Ταϋγέτου, σε γυάλινη φιάλη 50ml & 100ml ή μεταλλικό δοχείο 100ml.</p>
+    </div>
+    <img src="assets/aromatics.jpg" alt="Βότανα και ελιές" class="img-banner" loading="lazy" />
+    <ul class="aromatic-list">
+      <li><div class="ar-head"><h3 class="display">Πιπεριά Τσίλι</h3></div><p><span class="accent">Συνδυάζεται με — </span>Γαρίδες σαγανάκι, χταπόδι στιφάδο, κόκκινες σάλτσες.</p></li>
+      <li><div class="ar-head"><h3 class="display">Πορτοκάλι</h3></div><p><span class="accent">Συνδυάζεται με — </span>Μανιάτικη σαλάτα, όσπρια, κέικ, ομελέτες.</p></li>
+      <li><div class="ar-head"><h3 class="display">Βασιλικός</h3></div><p><span class="accent">Συνδυάζεται με — </span>Ψητά ψάρια, σεβίτσε, καρπάτσιο θαλασσινών.</p></li>
+      <li><div class="ar-head"><h3 class="display">Φασκόμηλο Πικάντικο</h3></div><p><span class="accent">Συνδυάζεται με — </span>Χοιρινό, κοτόπουλο, μαρινάδες.</p></li>
+      <li><div class="ar-head"><h3 class="display">Λεμόνι</h3></div><p><span class="accent">Συνδυάζεται με — </span>Σαλάτες, όσπρια, τάρτα λεμονιού.</p></li>
+      <li><div class="ar-head"><h3 class="display">Φρέσκο Σκόρδο</h3></div><p><span class="accent">Συνδυάζεται με — </span>Κατσίκι, αρνί, πατάτες, σως γιαουρτιού.</p></li>
+      <li><div class="ar-head"><h3 class="display">Ρίγανη</h3></div><p><span class="accent">Συνδυάζεται με — </span>Ψητά ψάρια, ψητό ψωμί, μοσχάρι.</p></li>
+      <li><div class="ar-head"><h3 class="display">Δεντρολίβανο</h3></div><p><span class="accent">Συνδυάζεται με — </span>Ψητά κρέατα, λαχανικά φούρνου, σάλτσες.</p></li>
+      <li><div class="ar-head"><h3 class="display">Μανταρίνι</h3></div><p><span class="accent">Συνδυάζεται με — </span>Πράσινες σαλάτες, πουλερικά, λευκά τυριά, κέικ.</p></li>
+    </ul>
+  </div>
+</section>
+
+<!-- PANTRY -->
+<section id="pantry" class="section">
+  <div class="container">
+    <div class="head-center">
+      <p class="eyebrow">— Παντοπωλείο</p>
+      <h2 class="display h-xl">Ελιές, πατέ, αλάτι <em class="accent">& ρίγανη.</em></h2>
+    </div>
+    <div class="pantry-grid">
+      <article><h3 class="display">Ελιές Καλαμών</h3><p>Σνακ σε πρακτική συσκευασία 40g.</p></article>
+      <article><h3 class="display">Ανάμικτες Ελιές</h3><p>Μείγμα εκλεκτών ελιών 40g.</p></article>
+      <article><h3 class="display">Πράσινες Ελιές</h3><p>Τραγανές, ιδανικές για σνακ 40g.</p></article>
+      <article><h3 class="display">Πατέ Καλαμών</h3><p>Πλούσια γεύση για ντιπ & σάντουιτς.</p></article>
+      <article><h3 class="display">Πατέ Πράσινης</h3><p>Αρωματικό, για σαλάτες & ορεκτικά.</p></article>
+      <article><h3 class="display">Αλάτι Τραχήλας</h3><p>Θαλασσινό αλάτι, 30g & 90g.</p></article>
+      <article><h3 class="display">Ρίγανη Ταϋγέτου</h3><p>Αρωματική ρίγανη, 4g & 15g.</p></article>
+    </div>
+  </div>
+</section>
+
+<!-- LOCATIONS -->
+<section id="locations" class="section bg-card">
+  <div class="container">
+    <div class="head-center">
+      <p class="eyebrow">— Δίκτυο Συνεργατών</p>
+      <h2 class="display h-xl">Σημεία <em class="accent">Πώλησης.</em></h2>
+      <p class="prose center-prose">Βρείτε το βιολογικό ελαιόλαδο και τα προϊόντα της οικογένειας Ραπτέα σε επιλεγμένα καταστήματα.</p>
+    </div>
+    <div class="map-wrapper">
+      <div id="sale-map"></div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section id="contact" class="section section-top-border">
+  <div class="container narrow center">
+    <p class="eyebrow">— Επικοινωνία</p>
+    <h2 class="display h-xxl">Από τη Στούπα <em class="accent">στο τραπέζι σας.</em></h2>
+    <p class="prose center-prose">Για παραγγελίες, χονδρική και σημεία πώλησης, επικοινωνήστε μαζί μας.</p>
+    <div class="contact-grid">
+      <a href="mailto:info@rapteasfamily.com"><div class="ct-label">Email</div><div class="display ct-value">info@rapteasfamily.com</div></a>
+      <a href="tel:+306944420729"><div class="ct-label">Τηλέφωνο</div><div class="display ct-value">+30 6944 420 729</div></a>
+      <div class="contact-card"><div class="ct-label">Τοποθεσία</div><div class="display ct-value">Στούπα, Μάνη</div></div>
+    </div>
+  </div>
+</section>
+
+<footer class="footer">
+  <div class="container footer-row">
+    <span>© <span id="yr"></span> Rapteas Family</span>
+    <span>Πιστοποιημένο Βιολογικό · Μάνη, Ελλάδα</span>
+    <span><a href="https://www.instagram.com/rapteasdesigns/" target="_blank" rel="noopener noreferrer" class="designer-link">rapteasdesigns 2026</a></span>
+  </div>
+</footer>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+<script>
+  document.getElementById('yr').textContent = new Date().getFullYear();
+
+  const map = L.map('sale-map', { scrollWheelZoom: false }).setView([37.3, 23.5], 6);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '&copy; OpenStreetMap contributors' }).addTo(map);
+
+  const locations = [
+    {name: 'Εμπορικό Βιοπωλείο – Τρίκαλα Κορινθίας', coords: [37.972701, 22.524055]},
+    {name: 'Εμπορικό Βιοπωλείο – Κως', coords: [36.893385, 27.287049]},
+    {name: '4 Εποχές – Λεβίδι', coords: [37.682693, 22.157512]},
+    {name: 'Μπαχαρτ εν Καλάμαις – Καλαμάτα', coords: [37.039145, 22.114972]},
+    {name: 'Σούπερ Μάρκετ Σπυρέας – Καρδαμύλη', coords: [36.887619, 22.230020]},
+    {name: 'Φυρογής – Κύθηρα', coords: [36.158187, 22.999183]},
+    {name: 'Anna\'s Gift Shop – Στούπα', coords: [36.8453848, 22.2596295]}
+  ];
+
+  locations.forEach(loc => {
+    L.marker(loc.coords)
+      .addTo(map)
+      .bindPopup(`<strong style="color:#1f1f1d;font-family:'Inter',sans-serif;">${loc.name}</strong>`);
+  });
+</script>
+</body>
+</html>
